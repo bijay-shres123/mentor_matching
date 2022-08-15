@@ -7,8 +7,10 @@ from profiles_api import views
 
 router =  DefaultRouter()
 router.register('profile', views.UserProfileViewSet)
+router.register('userdetail', views.UserDetailViewSet)
 
 urlpatterns = [
     path('login/', UserLoginApiView.as_view()),
+    
     path('',include(router.urls))
 ]

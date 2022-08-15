@@ -7,7 +7,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.UserProfile
-        fields = ('id','email','name','password')
+        fields = ['id','email','name','password','user_type']
 
         extra_kwargs =  {
             'password' :{
@@ -18,12 +18,15 @@ class UserProfileSerializer(serializers.ModelSerializer):
     
     def create(self, validated_data):
         """Create and return a new user"""
-        user = models.UserProfile.objects.create_user(
+        user = models.UserProfile.objects.create_user_api(
             email =  validated_data['email'],
             name = validated_data['name'],
-            password = validated_data['password']
+            password = validated_data['password'],
+            user_type=validated_data['user_type']
             )
         return user
+    
+    
     def update(self, instance, validated_data):
         """HANDLE updating user account"""
         if 'passowrd' in validated_data:
@@ -31,3 +34,13 @@ class UserProfileSerializer(serializers.ModelSerializer):
             instance.set_password(password)
 
         return super().update(instance, validated_data)
+
+class UserDetailSerializer(serializers.ModelSerializer):
+    """Serializes Proifle Feed Item"""
+
+    class Meta:
+        model =  models.UserDetail
+        fields = "__all__"
+        extra_kwargs ={
+            'user_profile':{'read_only':True}
+        }
