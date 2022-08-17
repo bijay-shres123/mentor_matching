@@ -86,7 +86,8 @@ class UserDetail(models.Model):
     """Take more user details"""
     user_profile =  models.ForeignKey(
          settings.AUTH_USER_MODEL,
-         on_delete= models.CASCADE
+         on_delete= models.CASCADE,
+         unique=True,
      )
     #Gender Type
     MALE = "MALE"
@@ -104,7 +105,7 @@ class UserDetail(models.Model):
     
     BRITISH = "BRITISH"
     ETHNICITY_TYPE_CHOICES = [
-        (BRITISH, "Britis"),
+        (BRITISH, "British"),
         (OTHER, "Other"),
        
     ]
@@ -123,7 +124,7 @@ class UserDetail(models.Model):
     INTROVERT = "INTROVERT"
     PEROSNALITY_TYPE_CHOICE = [
         (EXTROVERT, "Extrovert"),
-        (INTROVERT, "Introver"),
+        (INTROVERT, "Introvert"),
        
     ]
     personality = models.CharField(max_length=20, choices=PEROSNALITY_TYPE_CHOICE)
@@ -141,10 +142,15 @@ class UserDetail(models.Model):
     
     
     
-    grade:models.CharField(max_length=255)
+    grade=models.CharField(max_length=255)
     
-    
-    discplinary_actions:models.BooleanField()
+    YES ="Yes I have previous record of discplinary actions"
+    NO = "No I dont have any previous discplinary actions"
+    DISCPLINARY_ACTION_CHOICES = [
+        (YES,"Yes I have previous record of discplinary actions"),
+        (NO,"No I dont have any previous discplinary actions")
+    ]
+    discplinary_actions= models.CharField(max_length=255, choices=DISCPLINARY_ACTION_CHOICES)
 
     NO_EXPERIENCE ="No Experience"
     ONE_OR_MORE = "One or More than 1 Years"
@@ -154,25 +160,31 @@ class UserDetail(models.Model):
         (ONE_OR_MORE, "I have experience"),
        
     ]
-    teaching_experience:models.CharField(max_length=30, choices=TEACHING_EXPERIENCE_TYPE_CHOICE)
+    teaching_experience = models.CharField(max_length=30, choices=TEACHING_EXPERIENCE_TYPE_CHOICE)
 
     MENTORING_EXPERIENCE_TYPE_CHOICE = [
         (NO_EXPERIENCE, "I don't have any mentoring experience"),
         (ONE_OR_MORE, "I have mentoring experience"),
        
     ]
-    mentoring_experience:models.CharField(max_length=30, choices=MENTORING_EXPERIENCE_TYPE_CHOICE)
+    mentoring_experience = models.CharField(max_length=30, choices=MENTORING_EXPERIENCE_TYPE_CHOICE)
     
     ONE_TO_FIVE_HOURS = "ONE TO FIVE HOURS"
     MORE_THAN_FIVE_HOURS = "MORE THAN FIVE HOURS"
     TIME_AVALIBILITY_TYPE_CHOICE = [
-        (NO_EXPERIENCE, "I don't have any experience"),
-        (ONE_OR_MORE, "I have experience"),
+        (ONE_TO_FIVE_HOURS, "1-5 hours per week"),
+        (MORE_THAN_FIVE_HOURS, "More than 5 hours"),
        
     ]
-    time_availibility:models.CharField(max_length=30, choices=TIME_AVALIBILITY_TYPE_CHOICE)
+    time_availibility=models.CharField(max_length=30, choices=TIME_AVALIBILITY_TYPE_CHOICE)
     
-    accept_discplinary_actions:models.BooleanField()
+    ACCEPT_YES ="Yes I accept student with previous record of discplinary actions"
+    ACCEPT_NO = "No I dont prefer student with any previous discplinary actions"
+    ACCEPT_DISCPLINARY_ACTION_CHOICES = [
+        (ACCEPT_YES,"Yes I accept student with previous record of discplinary actions"),
+        (ACCEPT_NO,"No I dont prefer student with any previous discplinary actions")
+    ]
+    accept_discplinary_actions=models.CharField(max_length=255, choices=ACCEPT_DISCPLINARY_ACTION_CHOICES )
 
     created_on = models.DateField(auto_now_add=True)
 

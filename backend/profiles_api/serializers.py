@@ -1,5 +1,7 @@
 from rest_framework import serializers
 
+from rest_framework.authtoken.models import Token
+
 from profiles_api import models
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -44,3 +46,4 @@ class UserDetailSerializer(serializers.ModelSerializer):
         extra_kwargs ={
             'user_profile':{'read_only':True}
         }
+
