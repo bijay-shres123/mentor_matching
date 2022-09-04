@@ -1,41 +1,41 @@
-from ast import Mod
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.models import BaseUserManager
 
 from django.conf import settings
+from .choices import *
 
 
 class UserProfileManager(BaseUserManager):
     """Manager for user profiles"""
-    def create_user(self, email, name,password:str= None, ):
+    def create_user(self, email, username,password:str= None, ):
         """Create a new user profile"""
         if not email:
             raise ValueError("Please provide an email address")
         email = self.normalize_email(email)
-        user = self.model(email=email, name=name)
+        user = self.model(email=email, username=username)
 
         user.set_password(password)
         user.save(using= self._db)
 
         return user
 
-    def create_user_api(self, email, name,user_type,password:str= None, ):
+    def create_user_api(self, email, username,user_type,password:str= None, ):
         """Create a new user profile"""
         if not email:
             raise ValueError("Please provide an email address")
         email = self.normalize_email(email)
-        user = self.model(email=email, name=name,user_type=user_type)
+        user = self.model(email=email, username=username,user_type=user_type)
 
         user.set_password(password)
         user.save(using= self._db)
 
         return user
 
-    def create_superuser(self, email, name,password):
+    def create_superuser(self, email, username,password):
         """"Create new superuser with given details"""
-        user = self.create_user(email, name, password)
+        user = self.create_user(email, username, password)
         user.is_superuser = True
         user.is_staff = True
         user.save(using=self._db)
@@ -45,17 +45,8 @@ class UserProfileManager(BaseUserManager):
 class UserProfile(AbstractBaseUser, PermissionsMixin):
     """Database Model for User in the System"""
     email =  models.EmailField(max_length=255, unique=True)
-    name =  models.CharField(max_length=255)
-
-    #USER TYPE
-    COACH = "COACH"
-    STUDENT ="STUDENT"
-    USER_TYPE_CHOICE = [
-        (COACH, "Mentor"),
-        (STUDENT, "Mentee"),
-    ]
+    username =  models.CharField(max_length=255)    
     user_type = models.CharField(max_length=20, choices=USER_TYPE_CHOICE)
-
     date_joined=models.DateTimeField(verbose_name="date_joined",auto_now_add=True)
     last_login=models.DateTimeField(verbose_name="last_login",auto_now=True)
     is_active=models.BooleanField(default=True)
@@ -66,128 +57,84 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
     objects =  UserProfileManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['name']
+    REQUIRED_FIELDS = ['username']
 
     def __str__(self):
         return self.email
         
     def get_full_name(self):
         """Retrive full name of user"""
-        return self.name
+        return self.username
     
     def get_short_name(self):
         """Retrive short name of user"""
-        return self.name
+        return self.username
+    
+    def preferences(self):
+        return self.preference_set.all()
 
     
 
 
-class UserDetail(models.Model):
+class BaseModel(models.Model):
     """Take more user details"""
-    user_profile =  models.ForeignKey(
+    user =  models.ForeignKey(
          settings.AUTH_USER_MODEL,
          on_delete= models.CASCADE,
          unique=True,
-     )
-    #Gender Type
-    MALE = "MALE"
-    FEMALE = "FEMALE"
-    OTHER = "OTHER"
-    GENDER_TYPE_CHOICES = [
-        (MALE, "Male"),
-        (FEMALE, "Female"),
-        (OTHER,"Other"),
-    ]
-
+     )    
     gender = models.CharField(max_length=20, choices=GENDER_TYPE_CHOICES)
-
-    age = models.IntegerField()
-    
-    BRITISH = "BRITISH"
-    ETHNICITY_TYPE_CHOICES = [
-        (BRITISH, "British"),
-        (OTHER, "Other"),
-       
-    ]
-    ethnicity = models.CharField(max_length=20, choices=ETHNICITY_TYPE_CHOICES)
-    
-    ENGLISH = "ENGLISH"
-    SPANISH = "SPANISH"
-    LANGUAGE_TYPE_CHOICE = [
-        (ENGLISH, "English"),
-        (SPANISH, "Spanish"),
-        (OTHER,"Other"),
-    ]
-    language = models.CharField(max_length=20, choices=LANGUAGE_TYPE_CHOICE)
-    
-    EXTROVERT = "EXTROVERT"
-    INTROVERT = "INTROVERT"
-    PEROSNALITY_TYPE_CHOICE = [
-        (EXTROVERT, "Extrovert"),
-        (INTROVERT, "Introvert"),
-       
-    ]
+    age = models.IntegerField()    
+    ethnicity = models.CharField(max_length=20, choices=ETHNICITY_TYPE_CHOICES)    
+    language = models.CharField(max_length=20, choices=LANGUAGE_TYPE_CHOICE)    
     personality = models.CharField(max_length=20, choices=PEROSNALITY_TYPE_CHOICE)
-    
-
-    SCIENCE_AND_TECH = "SCIENCE_AND_TECH"
-   
-    FACULTY_TYPE_CHOICE = [
-        (SCIENCE_AND_TECH, "Science and Technology"),
-        (OTHER, "Other"),
-       
-    ]
     faculty = models.CharField(max_length=20, choices=FACULTY_TYPE_CHOICE)
-    
-    
-    
-    
-    grade=models.CharField(max_length=255)
-    
-    YES ="Yes I have previous record of discplinary actions"
-    NO = "No I dont have any previous discplinary actions"
-    DISCPLINARY_ACTION_CHOICES = [
-        (YES,"Yes I have previous record of discplinary actions"),
-        (NO,"No I dont have any previous discplinary actions")
-    ]
-    discplinary_actions= models.CharField(max_length=255, choices=DISCPLINARY_ACTION_CHOICES)
-
-    NO_EXPERIENCE ="No Experience"
-    ONE_OR_MORE = "One or More than 1 Years"
-   
-    TEACHING_EXPERIENCE_TYPE_CHOICE = [
-        (NO_EXPERIENCE, "I don't have any experience"),
-        (ONE_OR_MORE, "I have experience"),
-       
-    ]
-    teaching_experience = models.CharField(max_length=30, choices=TEACHING_EXPERIENCE_TYPE_CHOICE)
-
-    MENTORING_EXPERIENCE_TYPE_CHOICE = [
-        (NO_EXPERIENCE, "I don't have any mentoring experience"),
-        (ONE_OR_MORE, "I have mentoring experience"),
-       
-    ]
-    mentoring_experience = models.CharField(max_length=30, choices=MENTORING_EXPERIENCE_TYPE_CHOICE)
-    
-    ONE_TO_FIVE_HOURS = "ONE TO FIVE HOURS"
-    MORE_THAN_FIVE_HOURS = "MORE THAN FIVE HOURS"
-    TIME_AVALIBILITY_TYPE_CHOICE = [
-        (ONE_TO_FIVE_HOURS, "1-5 hours per week"),
-        (MORE_THAN_FIVE_HOURS, "More than 5 hours"),
-       
-    ]
-    time_availibility=models.CharField(max_length=30, choices=TIME_AVALIBILITY_TYPE_CHOICE)
-    
-    ACCEPT_YES ="Yes I accept student with previous record of discplinary actions"
-    ACCEPT_NO = "No I dont prefer student with any previous discplinary actions"
-    ACCEPT_DISCPLINARY_ACTION_CHOICES = [
-        (ACCEPT_YES,"Yes I accept student with previous record of discplinary actions"),
-        (ACCEPT_NO,"No I dont prefer student with any previous discplinary actions")
-    ]
-    accept_discplinary_actions=models.CharField(max_length=255, choices=ACCEPT_DISCPLINARY_ACTION_CHOICES )
-
     created_on = models.DateField(auto_now_add=True)
+    updated_on = models.DateField(auto_now=True)
+    is_deleted = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    mentor_or_mentee = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, blank=True, null=True, related_name="mentor_or_mentee")
 
     def __str__(self):
         """RETURN THE MODEL AS STRING"""
-        return self.faculty
+        return self.user.username
+
+
+class Student(BaseModel):
+    discplinary_actions= models.CharField(max_length=255, choices=DISCPLINARY_ACTION_CHOICES)
+    grade=models.CharField(max_length=255)
+
+    def __str__(self):
+        return super().__str__()
+
+class Mentor(BaseModel):
+    # student = models.ManyToManyField(Student)
+    teaching_experience = models.CharField(max_length=30, choices=TEACHING_EXPERIENCE_TYPE_CHOICE)
+    mentoring_experience = models.CharField(max_length=30, choices=MENTORING_EXPERIENCE_TYPE_CHOICE)
+    time_availibility=models.CharField(max_length=30, choices=TIME_AVALIBILITY_TYPE_CHOICE)
+    accept_discplinary_actions=models.CharField(max_length=255, choices=ACCEPT_DISCPLINARY_ACTION_CHOICES )
+
+    def __str__(self):
+        return super().__str__()
+
+
+class Preference(models.Model):
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="preferences")
+    candidate = models.ForeignKey(UserProfile, on_delete = models.CASCADE, related_name="candidate")
+    rank = models.PositiveIntegerField()
+
+
+    class Meta:
+        unique_together = (('user', 'candidate'), ('user', 'rank'))
+
+    
+    def __str__(self) -> str:
+        return "Prf of : {user} comb. with {candidate} , Rank: {rank}".format(
+            user = self.user.email,
+            candidate = self.candidate.email,
+            rank = self.rank
+        )
+    
+    @property
+    def candidate_addtional_profile(self):
+        return Mentor.objects.get(user = self.candidate)

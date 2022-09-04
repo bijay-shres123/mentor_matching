@@ -5,4 +5,6 @@ from profiles_api import models
 # Register your models here.
 
 admin.site.register(models.UserProfile)
-admin.site.register(models.UserDetail)
+admin.site.register(models.Student)
+admin.site.register(models.Mentor)
+admin.site.register(models.Preference)

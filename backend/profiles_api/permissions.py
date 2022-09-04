@@ -10,6 +10,27 @@ class UpdateOwnProfile(permissions.BasePermission):
 
         return obj.id == request.user.id
 
+
+class IsStudentUser(permissions.BasePermission):
+    """Allow User of Type Student to create Student Profile"""
+    def has_permission(self, request, view):
+        """ check if user is student type"""
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return  request.user.user_type == "STUDENT"
+
+
+
+class IsMentorUser(permissions.BasePermission):
+    """Allow User of Type Student to create Student Profile"""
+    def has_permission(self, request, view):
+        """ check if user is student type"""
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return  request.user.user_type == "COACH"
+
+
+
 class UpdateOwnDetails(permissions.BasePermission):
     """Allows user to update their own details"""
 
