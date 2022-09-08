@@ -2,7 +2,7 @@ from rest_framework import serializers
 # from rest_framework.validators import UniqueValidator
 from django.contrib.auth import authenticate
 from django.shortcuts import get_object_or_404
-# from django.utils.translation import gettext as _
+from django.utils.translation import gettext as _
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from rest_framework.authtoken.models import Token
