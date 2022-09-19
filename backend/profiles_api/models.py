@@ -45,7 +45,7 @@ class UserProfileManager(BaseUserManager):
 class UserProfile(AbstractBaseUser, PermissionsMixin):
     """Database Model for User in the System"""
     email =  models.EmailField(max_length=255, unique=True)
-    username =  models.CharField(max_length=255)    
+    username =  models.CharField(max_length=255)
     user_type = models.CharField(max_length=20, choices=USER_TYPE_CHOICE)
     date_joined=models.DateTimeField(verbose_name="date_joined",auto_now_add=True)
     last_login=models.DateTimeField(verbose_name="last_login",auto_now=True)
@@ -82,7 +82,9 @@ class BaseModel(models.Model):
          settings.AUTH_USER_MODEL,
          on_delete= models.CASCADE,
          unique=True,
-     )    
+     )
+    first_name = models.CharField(max_length=20, blank=True)
+    last_name = models.CharField(max_length=20, blank=True)    
     gender = models.CharField(max_length=20, choices=GENDER_TYPE_CHOICES)
     age = models.IntegerField()    
     ethnicity = models.CharField(max_length=20, choices=ETHNICITY_TYPE_CHOICES)    
@@ -98,6 +100,10 @@ class BaseModel(models.Model):
     def __str__(self):
         """RETURN THE MODEL AS STRING"""
         return self.user.username
+    
+    @property
+    def full_name(self):
+        return f"{self.first_name} {self.last_name}"
 
 
 class Student(BaseModel):
@@ -122,10 +128,6 @@ class Preference(models.Model):
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="preferences")
     candidate = models.ForeignKey(UserProfile, on_delete = models.CASCADE, related_name="candidate")
     rank = models.PositiveIntegerField()
-
-
-    class Meta:
-        unique_together = (('user', 'candidate'), ('user', 'rank'))
 
     
     def __str__(self) -> str:

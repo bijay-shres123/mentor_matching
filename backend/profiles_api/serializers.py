@@ -21,8 +21,16 @@ class MentorSerializer(serializers.ModelSerializer):
         model = Mentor
         exclude = ("created_on", "updated_on", "is_deleted", "is_active")
 
-class PreferenceSerializer(serializers.ModelSerializer):
-    candidate_addtional_profile = MentorSerializer()
+
+
+class StudentPreferenceSerializer(serializers.ModelSerializer):
+    candidate_addtional_profile = MentorSerializer(read_only=True)
+    class Meta:
+        model = Preference
+        fields = "__all__"
+
+class MentorPreferenceSerializer(serializers.ModelSerializer):
+    candidate_addtional_profile = StudentSerializer(read_only=True)
     class Meta:
         model = Preference
         fields = "__all__"
@@ -34,7 +42,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         write_only=True, required=True
     )
     password2 = serializers.CharField(write_only=True, required=True)
-    preferences = PreferenceSerializer(many=True, read_only=True)
+    preferences = StudentPreferenceSerializer(many=True, read_only=True)
     
     class Meta:
         model = UserProfile

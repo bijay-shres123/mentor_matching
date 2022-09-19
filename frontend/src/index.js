@@ -7,6 +7,7 @@ import Login from "./Pages/Login";
 import SignUp from "./Pages/SignUp";
 import UserDetails from "./Pages/UserDetails";
 import Ranking from "./Pages/Ranking";
+import Preference from "./Pages/Preference"
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
           <Route path="/signup" element={<SignUp/>}/>
           <Route path="/userdetails" element={<UserDetails/>}/>
           <Route path ="/ranking" element={<Ranking/>}/>
+          <Route path ="/preference" element={<Preference/>}/>
         </Route>
       </Routes>
     </BrowserRouter>

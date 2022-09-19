@@ -92,15 +92,19 @@ def create_preferences(request):
 class PreferenceViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
     authentication_classes = (TokenAuthentication,)
-    serializer_class = PreferenceSerializer
     model = Preference
 
     def get_queryset(self):
         queryset = Preference.objects.filter(user = self.request.user)
         return queryset
+
+    def get_serializer_class(self):
+        if self.request.user.user_type == "STUDENT":
+            return StudentPreferenceSerializer
+        return MentorPreferenceSerializer
     
     def create(self, request):
-        serializer = PreferenceSerializer( data = request.POST)
+        serializer = self.get_serializer_class( data = request.POST)
         if serializer.is_valid():
             serializer.save()
             return Response(date=serializer.data , status=status.HTTP_201_CREATED)

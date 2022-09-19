@@ -1,9 +1,30 @@
 import LoginBox from "../Components/LoginBox"
-const Login = () => {
-    return (
+import React from "react"
+import { useEffect, useState } from 'react';
 
-      <LoginBox/>
-    );
-  };
-    
+import {
+  Navigate
+} from "react-router-dom";
+const Login = () => {
+  const [userLoginInfo, setuserLoginInfo] = useState(false);
+
+  useEffect(() => {
+    if (localStorage.getItem('token')) {
+
+      setuserLoginInfo(true);
+
+    }
+  }, []);
+  if (userLoginInfo ===true){    
+      return (
+      <Navigate to ="/"/>
+      )
+}
+  else{
+  return(
+   
+   <LoginBox/>
+  )   
+  }
+  }
   export default Login;

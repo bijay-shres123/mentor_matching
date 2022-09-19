@@ -25,7 +25,7 @@ export default function Banner(){
 
             {/* <!-- Button "Try it" under the text --> */}
             <span className="text-center d-inline-block">
-              <a className="btn  btn-lg w-100" href="/trainingsession" role="button" style={{border:'1px solid #fff',background:'#08425a',color:'#fff'}}>Start Today</a>
+              <a className="btn  btn-lg w-100" href="/login" role="button" style={{border:'1px solid #fff',background:'#08425a',color:'#fff'}}>Start Today</a>
               {/* <p className="text-muted">No credit card required</p> */}
             </span>
           </div>
