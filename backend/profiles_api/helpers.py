@@ -37,3 +37,37 @@ def create_preference_for_student_user(student_user):
         candidate = Mentor.objects.get(id=sorted_mentor_and_score[0])
         Preference.objects.create(user=student_user_m, candidate = candidate.user, rank=rank)
         rank += 1
+
+
+def create_preference_for_mentor_user(mentor_user):
+    mentor_user_m = UserProfile.objects.get(id = mentor_user.id)
+    mentor = Mentor.objects.get(user=mentor_user_m)
+    #get students
+    students = Student.objects.all()
+    student_and_score = []
+    for student in students:
+        if student.mentor_or_mentee != None:
+            continue
+        if student.faculty != mentor.faculty:
+            continue
+
+        #Initiliaze Score
+        score = 0
+        if mentor.gender == student.gender:
+            score += 10
+        if mentor.ethnicity == student.ethnicity:
+            score += 5
+        student_and_score.append([student.id, score])
+    
+    #Delete Existing Preference Records
+    preferences = Preference.objects.filter(user=mentor_user_m).delete()
+
+    print(student_and_score)
+    #Create New Preference Records
+    student_and_score.sort(reverse=True, key=lambda x: x[1])
+
+    rank = 0
+    for sorted_mentor_and_score in student_and_score:
+        candidate = Student.objects.get(id=sorted_mentor_and_score[0])
+        Preference.objects.create(user=mentor_user_m, candidate = candidate.user, rank=rank)
+        rank += 1

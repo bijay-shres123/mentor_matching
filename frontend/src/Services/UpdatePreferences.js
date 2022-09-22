@@ -2,10 +2,12 @@ import axios from 'axios'
 
 export default function UpdatePreferences(preferences){
     var baseURL = `http://localhost:8000/api/preferences/`
+    let token = localStorage.getItem('token');
     const options = {
 
         headers:{
           'Content-Type': 'application/json',
+          "Authorization" : `Token ${token}`
         }
     }
     var rank = 1

@@ -37,6 +37,10 @@ ul.top-bar-menu {
 	-moz-transform: translate3d(0,0,0);
 }
 
+.list-item-custom:hover {
+	background: rgb(255, 132, 132);
+	color: #fff;
+}
 ul.top-bar-menu li {
 	font-size: 13px;
 	display: inline-block;
@@ -334,6 +338,7 @@ header.fullwidth .container {
 	}
 
 	.header-style-2 .user-menu ul { top: 50px; }
+	
 }
 
 @media (max-width: 992px) {

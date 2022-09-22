@@ -1,3 +1,4 @@
+from urllib import request
 from rest_framework import serializers
 # from rest_framework.validators import UniqueValidator
 from django.contrib.auth import authenticate
@@ -6,6 +7,7 @@ from django.utils.translation import gettext as _
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from rest_framework.authtoken.models import Token
+from rest_framework.fields import CurrentUserDefault
 
 from .models import UserProfile, Student, Mentor, Preference
 
@@ -14,6 +16,7 @@ class StudentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Student
         exclude = ("created_on", "updated_on", "is_deleted", "is_active")
+        read_only_fields = ("user",)
 
 
 class MentorSerializer(serializers.ModelSerializer):
@@ -110,7 +113,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = ['id','email','name','password','user_type']
+        fields = ['id','email','password','user_type']
 
         extra_kwargs =  {
             'password' :{
@@ -123,7 +126,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
         """Create and return a new user"""
         user = UserProfile.objects.create_user_api(
             email =  validated_data['email'],
-            name = validated_data['name'],
             password = validated_data['password'],
             user_type=validated_data['user_type']
             )

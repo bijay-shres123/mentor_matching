@@ -1,3 +1,4 @@
+from venv import create
 from django.shortcuts import render
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
@@ -10,7 +11,7 @@ from .serializers import *
 from profiles_api import permissions
 from .models import Student, Mentor, UserProfile, Preference
 from .permissions import IsMentorUser, IsStudentUser
-from .helpers import create_preference_for_student_user
+from .helpers import create_preference_for_mentor_user, create_preference_for_student_user
 from rest_framework.decorators import api_view
 
 from rest_framework import viewsets
@@ -56,7 +57,7 @@ class StudentViewSet(viewsets.ModelViewSet):
         serializer = StudentSerializer(data = request.POST)
 
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(user=self.request.user)
             return Response(data=serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -85,6 +86,8 @@ class MentorViewSet(viewsets.ModelViewSet):
 def create_preferences(request):
     if request.user.user_type == "STUDENT":
         create_preference_for_student_user(request.user)
+    else:
+        create_preference_for_mentor_user(request.user)
     return Response({"message" : "Created..."})
 
 
@@ -144,8 +147,8 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 #Retrieve And Update User Profile
 class ProfileRetriveUpdateView(RetrieveUpdateAPIView):
     serializer_class = UserProfileSerializer
-    # authentication_classes = (TokenAuthentication,)
-    # permission_classes = [IsAuthenticated]
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = [IsAuthenticated]
 
     def get_object(self):
         return self.request.user

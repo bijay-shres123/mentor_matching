@@ -129,6 +129,9 @@ class Preference(models.Model):
     candidate = models.ForeignKey(UserProfile, on_delete = models.CASCADE, related_name="candidate")
     rank = models.PositiveIntegerField()
 
+    class Meta:
+        ordering = ('rank',)
+
     
     def __str__(self) -> str:
         return "Prf of : {user} comb. with {candidate} , Rank: {rank}".format(
@@ -139,4 +142,6 @@ class Preference(models.Model):
     
     @property
     def candidate_addtional_profile(self):
-        return Mentor.objects.get(user = self.candidate)
+        if self.user.user_type == "STUDENT":
+            return Mentor.objects.get(user = self.candidate)
+        return Student.objects.get(user = self.candidate)

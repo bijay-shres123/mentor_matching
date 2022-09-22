@@ -18,8 +18,16 @@ const PreferenceContent = () => {
     }
 
     handleSubmit = ()=>{
+        let token = localStorage.getItem('token');
+        const options = {
+
+            headers:{
+              'Content-Type': 'application/json',
+              "Authorization" : `Token ${token}`
+            }
+        }
         console.log("Creating Preferences")
-        axios.get('http://127.0.0.1:8000/api/preferencecreate').then(()=>{
+        axios.get('http://127.0.0.1:8000/api/preferencecreate', options).then(()=>{
             GetPreferences().then((result)=>{
                 if(result.status === 200){
                     
@@ -104,8 +112,8 @@ const PreferenceContent = () => {
                     <Card.Title style={{textAlign:"center"}}>Rank Your Preference</Card.Title>
                         <Card.Text> 
                         <table class="table">
-                        <h1>DOWN HERE</h1>
-                        <tbody>
+                        <span style={{fontSize:'18px'}}>Please Drag and Drop to make your preference.</span>
+                        <tbody class="list-group">
                         <SortableList items={Preference} onSortEnd={onSortEnd} />
                             </tbody>
                             </table>
