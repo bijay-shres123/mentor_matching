@@ -78,10 +78,10 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
 
 class BaseModel(models.Model):
     """Take more user details"""
-    user =  models.ForeignKey(
+    user =  models.OneToOneField(
          settings.AUTH_USER_MODEL,
          on_delete= models.CASCADE,
-         unique=True,
+         unique=True,related_name="std_mnt_profile"
      )
     first_name = models.CharField(max_length=20, blank=True)
     last_name = models.CharField(max_length=20, blank=True)    
