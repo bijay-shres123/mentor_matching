@@ -72,6 +72,12 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
     
     def preferences(self):
         return self.preference_set.all()
+    
+    @property
+    def std_or_mnt_profile(self):
+        if self.user_type == "STUDENT":
+            Student.objects.get(user=self)
+        return Mentor.objects.get(user=self)
 
     
 
@@ -79,7 +85,7 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
 class BaseModel(models.Model):
     """Take more user details"""
     user =  models.OneToOneField(
-         settings.AUTH_USER_MODEL,
+         UserProfile,
          on_delete= models.CASCADE,
          unique=True,related_name="std_mnt_profile"
      )
@@ -95,7 +101,7 @@ class BaseModel(models.Model):
     updated_on = models.DateField(auto_now=True)
     is_deleted = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
-    mentor_or_mentee = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, blank=True, null=True, related_name="mentor_or_mentee")
+    mentor_or_mentee = models.OneToOneField(UserProfile, on_delete=models.PROTECT, blank=True, null=True, related_name="mentor_or_mentee")
 
     def __str__(self):
         """RETURN THE MODEL AS STRING"""
@@ -104,6 +110,9 @@ class BaseModel(models.Model):
     @property
     def full_name(self):
         return f"{self.first_name} {self.last_name}"
+
+    class Meta:
+        abstract = True
 
 
 class Student(BaseModel):

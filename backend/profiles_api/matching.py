@@ -71,6 +71,10 @@ stable_match.create_unmatched_list()
 stable_match.create_current_partner_matrix()
 stable_match.create_proposed_matrix()
 result = stable_match.calculate_stable_match()
-print(pref_1)
-print(pref_2)
-print(result)
+
+for grp1, grp2 in zip(result[0], result[1]):
+    first_user = UserProfile.objects.get(id=int(grp1))
+    second_user = UserProfile.objects.get(id=int(grp2))
+    print(first_user.std_or_mnt_profile)
+    first_user.mentor_or_mentee.set([second_user])
+    second_user.mentor_or_mentee.set([first_user])
