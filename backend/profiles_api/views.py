@@ -13,6 +13,7 @@ from .models import Student, Mentor, UserProfile, Preference
 from .permissions import IsMentorUser, IsStudentUser
 from .helpers import create_preference_for_mentor_user, create_preference_for_student_user
 from rest_framework.decorators import api_view
+from profiles_api.matching import create_matches
 
 from rest_framework import viewsets
 from rest_framework.authentication import TokenAuthentication
@@ -89,6 +90,13 @@ def create_preferences(request):
     else:
         create_preference_for_mentor_user(request.user)
     return Response({"message" : "Created..."})
+
+@api_view(['GET'])
+def create_matching_mentor_mentee(request):
+    if request.user.is_superuser:
+        create_matches()
+        return Response({"message" : "Completed Creating Matches."}, status=status.HTTP_200_OK)
+    return Response({"message": "Permission Denied"}, status=status.HTTP_403_FORBIDDEN)
 
 
 

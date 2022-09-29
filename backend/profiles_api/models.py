@@ -1,3 +1,4 @@
+from email import message
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
@@ -72,12 +73,6 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
     
     def preferences(self):
         return self.preference_set.all()
-    
-    @property
-    def std_or_mnt_profile(self):
-        if self.user_type == "STUDENT":
-            Student.objects.get(user=self)
-        return Mentor.objects.get(user=self)
 
     
 
@@ -85,7 +80,7 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
 class BaseModel(models.Model):
     """Take more user details"""
     user =  models.OneToOneField(
-         UserProfile,
+         settings.AUTH_USER_MODEL,
          on_delete= models.CASCADE,
          unique=True,related_name="std_mnt_profile"
      )
@@ -101,7 +96,7 @@ class BaseModel(models.Model):
     updated_on = models.DateField(auto_now=True)
     is_deleted = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
-    mentor_or_mentee = models.OneToOneField(UserProfile, on_delete=models.PROTECT, blank=True, null=True, related_name="mentor_or_mentee")
+    mentor_or_mentee = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, blank=True, null=True, related_name="mentor_or_mentee")
 
     def __str__(self):
         """RETURN THE MODEL AS STRING"""
@@ -110,9 +105,6 @@ class BaseModel(models.Model):
     @property
     def full_name(self):
         return f"{self.first_name} {self.last_name}"
-
-    class Meta:
-        abstract = True
 
 
 class Student(BaseModel):
@@ -154,3 +146,12 @@ class Preference(models.Model):
         if self.user.user_type == "STUDENT":
             return Mentor.objects.get(user = self.candidate)
         return Student.objects.get(user = self.candidate)
+
+
+class Notification(models.Model):
+    user = models.ForeignKey(UserProfile, on_delete = models.CASCADE, related_name = "notifications")
+    message = models.CharField(max_length = 200)
+    unread = models.BooleanField(default=True)
+
+    def __str__(self) -> str:
+        return f"{self.user.email} : {self.message}"
